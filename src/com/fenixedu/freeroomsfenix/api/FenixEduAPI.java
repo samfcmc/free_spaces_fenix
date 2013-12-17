@@ -1,7 +1,6 @@
 package com.fenixedu.freeroomsfenix.api;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -52,7 +51,7 @@ public class FenixEduAPI {
 	 * 
 	 * @return the spaces
 	 */
-	public void getSpaces(AsyncHttpResponseHandler responseHandler) {
+	public void getSpaces(ListCampusResponseHandler responseHandler) {
 		client.get(spacesURL, responseHandler);
 	}
 

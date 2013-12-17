@@ -3,21 +3,25 @@ package com.fenixedu.freeroomsfenix;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.fenixedu.freeroomsfenix.api.FenixEduAPI;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.fenixedu.freeroomsfenix.api.ListCampusResponseHandler;
+import com.fenixedu.freeroomsfenix.api.models.Campus;
 
 public class MainActivity extends Activity {
 
 	private final FenixEduAPI api = FenixEduAPI.getInstance();
-	private TextView text;
+
+	private Spinner campusSpinner;
+	private ArrayAdapter<Campus> campusSpinnerAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		initViews();
+		init();
 		loadSpaces();
 	}
 
@@ -28,23 +32,30 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
-	private void initViews() {
-		text = (TextView) findViewById(R.id.text_main);
+	private void init() {
+		campusSpinner = (Spinner) findViewById(R.id.campus_main_spinner);
+	}
+
+	private void loadCampusSpinner(Campus[] campusArray) {
+		campusSpinnerAdapter = new ArrayAdapter<Campus>(this,
+				android.R.layout.simple_spinner_item, campusArray);
+		campusSpinnerAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		campusSpinner.setAdapter(campusSpinnerAdapter);
 	}
 
 	private void loadSpaces() {
-		api.getSpaces(new AsyncHttpResponseHandler() {
+		api.getSpaces(new ListCampusResponseHandler() {
+
 			@Override
-			public void onSuccess(String response) {
-				text.setText(response);
+			public void onSuccess(Campus[] object) {
+				loadCampusSpinner(object);
 			}
 
 			@Override
-			public void onFailure(Throwable exception) {
-				text.setText(exception.getMessage());
+			public void onFailure(Throwable e) {
+				// text.setText(e.getMessage());
 			}
 		});
-
 	}
-
 }
