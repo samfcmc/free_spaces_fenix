@@ -1,14 +1,34 @@
 package com.fenixedu.freeroomsfenix;
 
-import android.os.Bundle;
+import java.util.Map;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.widget.ExpandableListView;
+
+import com.fenixedu.freeroomsfenix.adapters.RoomsIndexExpandableListAdapter;
+import com.fenixedu.freeroomsfenix.api.BuildingResponseHandler;
+import com.fenixedu.freeroomsfenix.api.FenixEduAPI;
+import com.fenixedu.freeroomsfenix.api.models.Building;
+import com.fenixedu.freeroomsfenix.api.models.Space;
 
 public class RoomsIndexActivity extends Activity {
+
+	private String currentBuildingID;
+
+	private final FenixEduAPI api = FenixEduAPI.getInstance();
+
+	private ExpandableListView expandableListView;
+	RoomsIndexExpandableListAdapter listAdapter;
+
+	private Space[] floors;
+	Map<String, Space[]> rooms;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +36,8 @@ public class RoomsIndexActivity extends Activity {
 		setContentView(R.layout.activity_rooms_index);
 		// Show the Up button in the action bar.
 		setupActionBar();
+
+		init();
 	}
 
 	/**
@@ -50,6 +72,50 @@ public class RoomsIndexActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private void init() {
+		Intent intent = getIntent();
+		currentBuildingID = intent.getExtras().getString("buildingID");
+
+		expandableListView = (ExpandableListView) findViewById(R.id.rooms_rooms_index_expandable_list);
+
+		listAdapter = new RoomsIndexExpandableListAdapter(this);
+
+		loadFloors();
+	}
+
+	private void setFloors(Space[] floors) {
+		this.floors = floors;
+	}
+
+	private void loadFloors() {
+		api.getSpace(currentBuildingID, new BuildingResponseHandler() {
+
+			@Override
+			public void onSuccess(Building building) {
+				listAdapter.setFloors(building.getContainedSpaces());
+				loadRooms();
+			}
+		});
+	}
+
+	private void loadRooms() {
+		for (Space floor : listAdapter.getFloors()) {
+			api.getSpace(floor.getId(), new BuildingResponseHandler() {
+
+				@Override
+				public void onSuccess(Building building) {
+					addRooms(building);
+				}
+			});
+		}
+	}
+
+	private void addRooms(Building buildingRooms) {
+		listAdapter.addRooms(buildingRooms);
+		expandableListView.setAdapter(listAdapter);
+
 	}
 
 }
