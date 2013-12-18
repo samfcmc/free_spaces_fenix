@@ -1,12 +1,15 @@
 package com.fenixedu.freeroomsfenix;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import com.fenixedu.freeroomsfenix.api.CampusResponseHandler;
@@ -24,6 +27,10 @@ public class MainActivity extends Activity {
 	private Spinner buildingsSpinner;
 	private ArrayAdapter<Space> buildingsSpinnerAdapter;
 
+	private Button searchButton;
+
+	private String currentBuildingID;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,9 +47,18 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	public String getCurrentBuildingID() {
+		return currentBuildingID;
+	}
+
+	public void setCurrentBuildingID(String currentBuildingID) {
+		this.currentBuildingID = currentBuildingID;
+	}
+
 	private void init() {
 		campusSpinner = (Spinner) findViewById(R.id.campus_main_spinner);
 		buildingsSpinner = (Spinner) findViewById(R.id.buildings_main_spinner);
+		searchButton = (Button) findViewById(R.id.search_main_button);
 
 		campusSpinnerAdapter = new ArrayAdapter<Space>(this,
 				android.R.layout.simple_spinner_item);
@@ -56,6 +72,9 @@ public class MainActivity extends Activity {
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		buildingsSpinner.setAdapter(buildingsSpinnerAdapter);
 
+		initBuildingsSpinnerBehaviour();
+
+		initSearchButtonBehaviour();
 	}
 
 	private void initCampusSpinnerBehaviour() {
@@ -68,6 +87,33 @@ public class MainActivity extends Activity {
 			}
 
 			public void onNothingSelected(AdapterView<?> arg0) {
+			}
+		});
+	}
+
+	private void initBuildingsSpinnerBehaviour() {
+		buildingsSpinner
+				.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+					public void onItemSelected(AdapterView<?> adapterView,
+							View view, int position, long id) {
+						if (buildingsSpinnerAdapter.getCount() > 0) {
+							Space space = buildingsSpinnerAdapter
+									.getItem(position);
+							setCurrentBuildingID(space.getId());
+						}
+					}
+
+					public void onNothingSelected(AdapterView<?> adapterView) {
+					}
+				});
+	}
+
+	private void initSearchButtonBehaviour() {
+		searchButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				goToRoomsIndex();
 			}
 		});
 	}
@@ -100,5 +146,15 @@ public class MainActivity extends Activity {
 						object.getContainedSpaces());
 			}
 		});
+	}
+
+	private void goToRoomsIndex() {
+		if (currentBuildingID == null) {
+			// TODO: Handle this in a different way
+			return;
+		}
+		Intent intent = new Intent(this, RoomsIndexActivity.class);
+		intent.putExtra("buildingID", currentBuildingID);
+		startActivity(intent);
 	}
 }
