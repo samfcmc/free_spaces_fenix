@@ -1,12 +1,8 @@
 package com.fenixedu.freeroomsfenix.api;
 
 import com.fenixedu.freeroomsfenix.api.models.Campus;
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
-public abstract class CampusResponseHandler extends AsyncHttpResponseHandler {
-
-	private final Gson gson = new Gson();
+public abstract class CampusResponseHandler extends SpaceResponseHandler {
 
 	public CampusResponseHandler() {
 		super();
@@ -14,7 +10,7 @@ public abstract class CampusResponseHandler extends AsyncHttpResponseHandler {
 
 	@Override
 	public void onSuccess(String response) {
-		Campus instance = gson.fromJson(response, Campus.class);
+		Campus instance = getGson().fromJson(response, Campus.class);
 		onSuccess(instance);
 	}
 
