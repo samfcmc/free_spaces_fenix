@@ -4,5 +4,7 @@
     <string name="app_name">FreeRoomsFenix</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="search_main_button">Search</string>
+    <string name="title_activity_rooms_index">RoomsIndexActivity</string>
 
 </resources>
