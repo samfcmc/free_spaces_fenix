@@ -54,7 +54,7 @@ public class FenixEduAPI {
 		client.get(spacesURL, responseHandler);
 	}
 
-	public void getSpace(String spaceID, CampusResponseHandler responseHandler) {
+	public void getSpace(String spaceID, SpaceResponseHandler responseHandler) {
 		String url = spacesURL + spaceID;
 		client.get(url, responseHandler);
 	}
