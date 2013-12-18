@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/buildings_main_spinner"
+        android:layout_alignLeft="@+id/buildings_main_spinner"
         android:layout_marginBottom="18dp"
         android:text="@string/search_main_button" />
 
