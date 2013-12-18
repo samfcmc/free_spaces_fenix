@@ -15,4 +15,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
+    <Spinner
+        android:id="@+id/buildings_main_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/campus_main_spinner"
+        android:layout_below="@+id/campus_main_spinner"
+        android:layout_marginTop="44dp" />
+
 </RelativeLayout>

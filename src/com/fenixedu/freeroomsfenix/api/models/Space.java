@@ -4,7 +4,7 @@ package com.fenixedu.freeroomsfenix.api.models;
  * The Class Space. Used to map json object space return by the api to a java
  * class
  */
-public abstract class Space {
+public class Space {
 
 	/** The id. */
 	private String id;
