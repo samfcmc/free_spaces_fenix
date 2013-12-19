@@ -27,7 +27,6 @@ public class RoomsIndexActivity extends Activity {
 	private ExpandableListView expandableListView;
 	RoomsIndexExpandableListAdapter listAdapter;
 
-	private Space[] floors;
 	Map<String, Space[]> rooms;
 
 	@Override
@@ -83,10 +82,6 @@ public class RoomsIndexActivity extends Activity {
 		listAdapter = new RoomsIndexExpandableListAdapter(this);
 
 		loadFloors();
-	}
-
-	private void setFloors(Space[] floors) {
-		this.floors = floors;
 	}
 
 	private void loadFloors() {
