@@ -1,6 +1,7 @@
 package com.fenixedu.freeroomsfenix;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -138,12 +139,15 @@ public class MainActivity extends Activity {
 	}
 
 	private void loadBuildings(String spaceID) {
+		final ProgressDialog dialog = ProgressDialog.show(this, "",
+				"Loading...", true);
 		api.getSpace(spaceID, new CampusResponseHandler() {
 
 			@Override
 			public void onSuccess(Campus object) {
 				fillSpinnerAdapter(buildingsSpinnerAdapter,
 						object.getContainedSpaces());
+				dialog.dismiss();
 			}
 		});
 	}
