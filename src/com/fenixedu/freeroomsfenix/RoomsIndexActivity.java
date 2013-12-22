@@ -4,13 +4,16 @@ import java.util.Map;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnGroupClickListener;
 
 import com.fenixedu.freeroomsfenix.adapters.RoomsIndexExpandableListAdapter;
 import com.fenixedu.freeroomsfenix.api.BuildingResponseHandler;
@@ -90,21 +93,46 @@ public class RoomsIndexActivity extends Activity {
 			@Override
 			public void onSuccess(Building building) {
 				listAdapter.setFloors(building.getContainedSpaces());
-				loadRooms();
+				expandableListView.setAdapter(listAdapter);
+				initExpandableListViewBehaviour();
 			}
 		});
 	}
 
-	private void loadRooms() {
-		for (Space floor : listAdapter.getFloors()) {
-			api.getSpace(floor.getId(), new BuildingResponseHandler() {
+	private void initExpandableListViewBehaviour() {
+		expandableListView.setOnGroupClickListener(new OnGroupClickListener() {
 
-				@Override
-				public void onSuccess(Building building) {
-					addRooms(building);
+			public boolean onGroupClick(ExpandableListView parent, View v,
+					int groupPosition, long id) {
+				if (listAdapter.getChildrenCount(groupPosition) == 0) {
+					Space group = (Space) listAdapter.getGroup(groupPosition);
+					loadSpacesInside(group.getId(), parent, v, groupPosition,
+							id);
+					return true;
+				} else {
+					// Data is already in the list... Just load the child items
+					return false;
 				}
-			});
-		}
+
+			}
+		});
+	}
+
+	private void loadSpacesInside(final String spaceID,
+			final ExpandableListView listView, final View view,
+			final int groupPosition, final long id) {
+		final ProgressDialog dialog = ProgressDialog.show(
+				RoomsIndexActivity.this, "", "Loading...", true);
+
+		api.getSpace(spaceID, new BuildingResponseHandler() {
+
+			@Override
+			public void onSuccess(Building building) {
+				addRooms(building);
+				dialog.dismiss();
+				listView.performItemClick(view, groupPosition, id);
+			}
+		});
 	}
 
 	private void addRooms(Building buildingRooms) {

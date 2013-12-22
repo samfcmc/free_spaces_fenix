@@ -88,7 +88,11 @@ public class RoomsIndexExpandableListAdapter extends BaseExpandableListAdapter {
 		Space group = floors[groupPosition];
 		String groupID = group.getId();
 		Space[] childs = rooms.get(groupID);
-		return childs.length;
+		if (childs == null) {
+			return 0;
+		} else {
+			return childs.length;
+		}
 	}
 
 	public Object getGroup(int groupPosition) {
