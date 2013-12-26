@@ -105,9 +105,7 @@ public class RoomsIndexActivity extends Activity {
 			public boolean onGroupClick(ExpandableListView parent, View v,
 					int groupPosition, long id) {
 				if (listAdapter.getChildrenCount(groupPosition) == 0) {
-					Space group = (Space) listAdapter.getGroup(groupPosition);
-					loadSpacesInside(group.getId(), parent, v, groupPosition,
-							id);
+					loadSpacesInside(parent, v, groupPosition, id);
 					return true;
 				} else {
 					// Data is already in the list... Just load the child items
@@ -118,13 +116,13 @@ public class RoomsIndexActivity extends Activity {
 		});
 	}
 
-	private void loadSpacesInside(final String spaceID,
-			final ExpandableListView listView, final View view,
-			final int groupPosition, final long id) {
+	private void loadSpacesInside(final ExpandableListView listView,
+			final View view, final int groupPosition, final long id) {
 		final ProgressDialog dialog = ProgressDialog.show(
 				RoomsIndexActivity.this, "", "Loading...", true);
+		Space group = (Space) listAdapter.getGroup(groupPosition);
 
-		api.getSpace(spaceID, new BuildingResponseHandler() {
+		api.getSpace(group.getId(), new BuildingResponseHandler() {
 
 			@Override
 			public void onSuccess(Building building) {
@@ -137,7 +135,10 @@ public class RoomsIndexActivity extends Activity {
 
 	private void addRooms(Building buildingRooms) {
 		listAdapter.addRooms(buildingRooms);
-		expandableListView.setAdapter(listAdapter);
+		listAdapter.notifyDataSetChanged();
+		// listAdapter.notifyDataSetInvalidated();
+		// listAdapter.notifyDataSetInvalidated();
+		// expandableListView.setAdapter(listAdapter);
 
 	}
 
