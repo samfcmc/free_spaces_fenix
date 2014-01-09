@@ -7,4 +7,9 @@
     <string name="search_main_button">Search</string>
     <string name="title_activity_rooms_index">RoomsIndexActivity</string>
 
+    <!-- Buttons -->
+    <string name="button_main_login">Login</string>
+    <string name="button_main_explore">Just explore</string>
+    <string name="title_activity_spaces">SpacesActivity</string>
+
 </resources>
