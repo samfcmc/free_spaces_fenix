@@ -1,8 +1,5 @@
 package com.fenixedu.freeroomsfenix;
 
-import pt.ist.fenixedu.sdk.FenixEduAndroidClient;
-import pt.ist.fenixedu.sdk.FenixEduAndroidClientFactory;
-import pt.ist.fenixedu.sdk.FenixEduConfig;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,22 +7,28 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class ListCampusFragment extends SherlockFragment {
 
 	private ListView listView;
+	private CampusListAdapter adapter;
 
 	private FenixSpace[] campus;
+
+	private FenixFreeRoomsApplication application;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// setContentView(R.layout.activity_list_campus);
 	}
 
 	@Override
@@ -33,31 +36,56 @@ public class ListCampusFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		return inflater
-				.inflate(R.layout.activity_list_campus, container, false);
+				.inflate(R.layout.fragment_list_campus, container, false);
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		application = (FenixFreeRoomsApplication) getActivity()
+				.getApplication();
+
 		listView = (ListView) getView().findViewById(
 				R.id.listview_list_campus_campus);
+
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> adapterView, View view,
+					int position, long id) {
+				onClickCampus(position);
+			}
+		});
 
 		loadCampusList();
 	}
 
 	private void updateList() {
-		listView.setAdapter(new CampusListAdapter(getSherlockActivity()));
+		adapter = new CampusListAdapter(getSherlockActivity());
+		listView.setAdapter(adapter);
 	}
 
 	private void loadCampusList() {
 		new LoadCampusListAsyncTask().execute();
 	}
 
+	private void onClickCampus(int position) {
+		adapter.setSelectedPosition(position);
+		adapter.notifyDataSetChanged();
+		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		Tab currentTab = actionBar.getSelectedTab();
+		Tab nextTab = actionBar.getTabAt(currentTab.getPosition() + 1);
+		application.setCurrentSelectedCampus(position);
+		actionBar.selectTab(nextTab);
+	}
+
 	private class CampusListAdapter extends ArrayAdapter<FenixSpace> {
 
+		private int selectedPosition;;
+
 		public CampusListAdapter(Context context) {
-			super(context, R.layout.activity_list_campus, campus);
+			super(context, R.layout.fragment_list_campus, campus);
+			this.selectedPosition = application.getCurrentSelectedCampus();
 		}
 
 		@Override
@@ -72,8 +100,19 @@ public class ListCampusFragment extends SherlockFragment {
 					.findViewById(R.id.radiobutton_campus_list_item_campus);
 			radioButton.setText(space.getName());
 
+			if (selectedPosition == position) {
+				radioButton.setChecked(true);
+			} else {
+				radioButton.setChecked(false);
+			}
+
 			return convertView;
 		}
+
+		public void setSelectedPosition(int position) {
+			this.selectedPosition = position;
+		}
+
 	}
 
 	private class LoadCampusListAsyncTask extends
@@ -81,16 +120,7 @@ public class ListCampusFragment extends SherlockFragment {
 
 		@Override
 		protected Integer doInBackground(Void... params) {
-			String consumerKey = "7065221202521";
-			String consumerSecret = "zHaiWfLxfW1Wt8rbwusDAx8lt24Z4PvG0tyzSS7607nxRZb23mTNBqVZzab9KGzU45RMH4z2tn8e4PJ7xDB8OSuTzBE0dBs8BN3vKatTb4rX1BNWcTq";
-			String accessToken = "NzA3MzgxMTE0MzU1NDpkNTNmZjFmOTUwZGIxMjU3NGNkN2ZlNThlMmVhZmU3";
-			String baseUrl = "https://fenix.ist.utl.pt";
-			String callbackUrl = "http://localhost:8000/login";
-			FenixEduConfig config = new FenixEduConfig(consumerKey,
-					consumerSecret, accessToken, baseUrl, callbackUrl);
-			FenixEduAndroidClient client = FenixEduAndroidClientFactory
-					.getSingleton(config);
-			campus = client.getSpaces();
+			campus = application.getFenixEduClient().getSpaces();
 			return Integer.valueOf(campus.length);
 		}
 
