@@ -11,5 +11,11 @@
     <string name="button_main_login">Login</string>
     <string name="button_main_explore">Just explore</string>
     <string name="title_activity_spaces">SpacesActivity</string>
+    <string name="title_activity_list_campus">ListCampusActivity</string>
+    
+    <!-- Tabs -->
+    <string name="tab_spaces_campus">Campus</string>
+    <string name="tab_spaces_buildings">Buildings</string>
+    <string name="tab_spaces_rooms">Rooms</string>
 
 </resources>

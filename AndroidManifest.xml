@@ -26,7 +26,17 @@
         </activity>
         <activity
             android:name="com.fenixedu.freeroomsfenix.SpacesActivity"
-            android:label="@string/title_activity_spaces" >
+            android:label="@string/title_activity_spaces"
+            android:parentActivityName="com.fenixedu.freeroomsfenix.MainActivity" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fenixedu.freeroomsfenix.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.fenixedu.freeroomsfenix.ListCampusFragment"
+            android:label="@string/title_activity_list_campus" >
         </activity>
     </application>
 

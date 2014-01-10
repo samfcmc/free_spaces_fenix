@@ -23,11 +23,13 @@
 			<plugin>
 				<groupId>com.jayway.maven.plugins.android.generation2</groupId>
 				<artifactId>android-maven-plugin</artifactId>
+				
 				<configuration>
 					<sdk>
 						<!-- platform or api level (api level 16 = platform 4.1) -->
 						<platform>19</platform>
 					</sdk>
+					<extractDuplicates>true</extractDuplicates>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -69,7 +71,13 @@
 			<version>4.4.0</version>
 			<type>jar</type>
 		</dependency>
-
+		
+		<!-- FenixEdu SDK -->
+		<dependency>
+			<groupId>pt.ist</groupId>
+			<artifactId>fenixedu-sdk</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
 	</dependencies>
