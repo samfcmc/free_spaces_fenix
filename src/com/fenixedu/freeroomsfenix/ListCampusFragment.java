@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
-import android.widget.RadioButton;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -75,7 +75,8 @@ public class ListCampusFragment extends SherlockFragment {
 		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
 		Tab currentTab = actionBar.getSelectedTab();
 		Tab nextTab = actionBar.getTabAt(currentTab.getPosition() + 1);
-		application.setCurrentSelectedCampus(position);
+		application.setCurrentSelectedCampusPosition(position);
+		application.setCurrentCampus(adapter.getItem(position));
 		actionBar.selectTab(nextTab);
 	}
 
@@ -85,7 +86,8 @@ public class ListCampusFragment extends SherlockFragment {
 
 		public CampusListAdapter(Context context) {
 			super(context, R.layout.fragment_list_campus, campus);
-			this.selectedPosition = application.getCurrentSelectedCampus();
+			this.selectedPosition = application
+					.getCurrentSelectedCampusPosition();
 		}
 
 		@Override
@@ -96,14 +98,14 @@ public class ListCampusFragment extends SherlockFragment {
 						parent, false);
 			}
 			FenixSpace space = getItem(position);
-			RadioButton radioButton = (RadioButton) convertView
-					.findViewById(R.id.radiobutton_campus_list_item_campus);
-			radioButton.setText(space.getName());
+			CheckedTextView checkedTextView = (CheckedTextView) convertView
+					.findViewById(R.id.checkedtextview_campus_list_item);
+			checkedTextView.setText(space.getName());
 
 			if (selectedPosition == position) {
-				radioButton.setChecked(true);
+				checkedTextView.setChecked(true);
 			} else {
-				radioButton.setChecked(false);
+				checkedTextView.setChecked(false);
 			}
 
 			return convertView;
