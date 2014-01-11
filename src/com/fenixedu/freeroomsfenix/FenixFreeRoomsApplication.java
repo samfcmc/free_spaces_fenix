@@ -1,18 +1,27 @@
 package com.fenixedu.freeroomsfenix;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import pt.ist.fenixedu.sdk.FenixEduAndroidClient;
 import pt.ist.fenixedu.sdk.FenixEduAndroidClientFactory;
 import pt.ist.fenixedu.sdk.FenixEduConfig;
+import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
 import android.app.Application;
 import android.content.res.Resources;
 
 public class FenixFreeRoomsApplication extends Application {
 
 	FenixEduAndroidClient fenixEduClient;
-	private int currentSelectedCampus;
+
+	private int currentSelectedCampusPosition;
+	private FenixSpace currentCampus;
+	private DateTime time;
 
 	public FenixFreeRoomsApplication() {
-		currentSelectedCampus = -1;
+		currentSelectedCampusPosition = -1;
+		time = new DateTime();
 	}
 
 	@Override
@@ -39,12 +48,34 @@ public class FenixFreeRoomsApplication extends Application {
 		return fenixEduClient;
 	}
 
-	public int getCurrentSelectedCampus() {
-		return currentSelectedCampus;
+	public int getCurrentSelectedCampusPosition() {
+		return currentSelectedCampusPosition;
 	}
 
-	public void setCurrentSelectedCampus(int currentSelectedCampus) {
-		this.currentSelectedCampus = currentSelectedCampus;
+	public void setCurrentSelectedCampusPosition(int currentSelectedCampus) {
+		this.currentSelectedCampusPosition = currentSelectedCampus;
+	}
+
+	public FenixSpace getCurrentCampus() {
+		return currentCampus;
+	}
+
+	public void setCurrentCampus(FenixSpace currentCampus) {
+		this.currentCampus = currentCampus;
+	}
+
+	public DateTime getTime() {
+		return time;
+	}
+
+	public void setTime(DateTime time) {
+		this.time = time;
+	}
+
+	public String getTimeAsString() {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+		String dateString = formatter.print(time);
+		return dateString;
 	}
 
 }
