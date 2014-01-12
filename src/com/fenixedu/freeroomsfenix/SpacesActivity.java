@@ -22,6 +22,8 @@ public class SpacesActivity extends SherlockFragmentActivity {
 		String campusTabTitle = resources.getString(R.string.tab_spaces_campus);
 		String buildingsTabTitle = resources
 				.getString(R.string.tab_spaces_buildings);
+		String floorsAndRoomsTabTitle = resources
+				.getString(R.string.tab_spaces_rooms);
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		actionBar.setDisplayShowTitleEnabled(true);
@@ -40,7 +42,16 @@ public class SpacesActivity extends SherlockFragmentActivity {
 				.setText(buildingsTabTitle)
 				.setTabListener(
 						new TabListenerImpl<ListBuildingsFragment>(this,
-								"rooms", ListBuildingsFragment.class));
+								"buildings", ListBuildingsFragment.class));
+		actionBar.addTab(tab);
+
+		tab = actionBar
+				.newTab()
+				.setText(floorsAndRoomsTabTitle)
+				.setTabListener(
+						new TabListenerImpl<ListFloorsAndRoomsFragment>(this,
+								"rooms", ListFloorsAndRoomsFragment.class));
+
 		actionBar.addTab(tab);
 	}
 }

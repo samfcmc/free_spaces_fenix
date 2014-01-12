@@ -7,10 +7,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragment;
 
 public class ListBuildingsFragment extends SherlockFragment {
@@ -47,6 +51,14 @@ public class ListBuildingsFragment extends SherlockFragment {
 		listView = (ListView) getView().findViewById(
 				R.id.listview_buildings_list);
 
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			public void onItemClick(AdapterView<?> adapterView, View view,
+					int position, long id) {
+				onBuildingClick(position);
+			}
+		});
+
 		loadCampus();
 	}
 
@@ -70,6 +82,15 @@ public class ListBuildingsFragment extends SherlockFragment {
 	private void updateBuildingsList() {
 		adapter = new BuildingsListAdapter(getSherlockActivity());
 		listView.setAdapter(adapter);
+	}
+
+	private void onBuildingClick(int position) {
+		ActionBar actionBar = getSherlockActivity().getSupportActionBar();
+		Tab currentTab = actionBar.getSelectedTab();
+		Tab nextTab = actionBar.getTabAt(currentTab.getPosition() + 1);
+		application.setCurrentSelectedBuildingPosition(position);
+		application.setCurrentBuilding(adapter.getItem(position));
+		actionBar.selectTab(nextTab);
 	}
 
 	private class BuildingsListAdapter extends ArrayAdapter<FenixSpace> {
