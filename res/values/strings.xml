@@ -22,5 +22,9 @@
     <string name="tab_spaces_campus">Campus</string>
     <string name="tab_spaces_buildings">Buildings</string>
     <string name="tab_spaces_rooms">Rooms</string>
+    
+    <!-- Text Views (Labels) -->
+    <string name="fragment_list_floors_rooms_building_label">Rooms on building</string>
+   	<string name="white_spaces">  </string>
 
 </resources>
