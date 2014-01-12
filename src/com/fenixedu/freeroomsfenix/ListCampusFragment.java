@@ -1,8 +1,8 @@
 package com.fenixedu.freeroomsfenix;
 
+import pt.ist.fenixedu.android.FenixEduHttpResponseHandler;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,7 +57,13 @@ public class ListCampusFragment extends SherlockFragment {
 			}
 		});
 
-		loadCampusList();
+		try {
+			loadCampusList();
+		} catch (Exception e) {
+			String s = e.getMessage();
+			String t = s;
+		}
+
 	}
 
 	private void updateList() {
@@ -66,7 +72,16 @@ public class ListCampusFragment extends SherlockFragment {
 	}
 
 	private void loadCampusList() {
-		new LoadCampusListAsyncTask().execute();
+		application.getFenixEduClient().getSpaces(
+				new FenixEduHttpResponseHandler<FenixSpace[]>(
+						FenixSpace[].class) {
+
+					@Override
+					public void onSuccess(FenixSpace[] spaces) {
+						campus = spaces;
+						updateList();
+					}
+				});
 	}
 
 	private void onClickCampus(int position) {
@@ -113,22 +128,6 @@ public class ListCampusFragment extends SherlockFragment {
 
 		public void setSelectedPosition(int position) {
 			this.selectedPosition = position;
-		}
-
-	}
-
-	private class LoadCampusListAsyncTask extends
-			AsyncTask<Void, Void, Integer> {
-
-		@Override
-		protected Integer doInBackground(Void... params) {
-			campus = application.getFenixEduClient().getSpaces();
-			return Integer.valueOf(campus.length);
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-			updateList();
 		}
 
 	}

@@ -4,8 +4,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import pt.ist.fenixedu.sdk.FenixEduAndroidClient;
-import pt.ist.fenixedu.sdk.FenixEduAndroidClientFactory;
+import pt.ist.fenixedu.android.FenixEduAndroidClient;
+import pt.ist.fenixedu.android.FenixEduAndroidClientFactory;
 import pt.ist.fenixedu.sdk.FenixEduConfig;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
 import android.app.Application;
@@ -40,8 +40,8 @@ public class FenixFreeRoomsApplication extends Application {
 				.getString(R.string.fenixedu_client_callback_url);
 		FenixEduConfig config = new FenixEduConfig(clientId, clientSecret, "",
 				baseUrl, callbackUrl);
-		fenixEduClient = FenixEduAndroidClientFactory.getSingleton(config);
-
+		FenixEduAndroidClientFactory.setClientConfig(config);
+		fenixEduClient = FenixEduAndroidClientFactory.getInstance();
 	}
 
 	public FenixEduAndroidClient getFenixEduClient() {

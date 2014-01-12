@@ -1,8 +1,8 @@
 package com.fenixedu.freeroomsfenix;
 
+import pt.ist.fenixedu.android.FenixEduHttpResponseHandler;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,7 +51,20 @@ public class ListBuildingsFragment extends SherlockFragment {
 	}
 
 	private void loadCampus() {
-		new LoadCampus().execute();
+		String campusId = application.getCurrentCampus().getId();
+		String day = application.getTimeAsString();
+		application.getFenixEduClient().getSpace(
+				campusId,
+				day,
+				new FenixEduHttpResponseHandler<FenixSpace.Campus>(
+						FenixSpace.Campus.class) {
+
+					@Override
+					public void onSuccess(FenixSpace.Campus space) {
+						campus = space;
+						updateBuildingsList();
+					}
+				});
 	}
 
 	private void updateBuildingsList() {
@@ -81,24 +94,6 @@ public class ListBuildingsFragment extends SherlockFragment {
 
 			return convertView;
 		}
-	}
-
-	private class LoadCampus extends AsyncTask<Void, Void, Integer> {
-
-		@Override
-		protected Integer doInBackground(Void... params) {
-			String campusId = application.getCurrentCampus().getId();
-			String timeString = application.getTimeAsString();
-			campus = application.getFenixEduClient().getSpace(campusId,
-					timeString, FenixSpace.Campus.class);
-			return campus.getContainedSpaces().size();
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-			updateBuildingsList();
-		}
-
 	}
 
 }
