@@ -57,12 +57,7 @@ public class ListCampusFragment extends SherlockFragment {
 			}
 		});
 
-		try {
-			loadCampusList();
-		} catch (Exception e) {
-			String s = e.getMessage();
-			String t = s;
-		}
+		loadCampusList();
 
 	}
 
