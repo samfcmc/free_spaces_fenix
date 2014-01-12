@@ -17,6 +17,26 @@ public class FenixFreeRoomsApplication extends Application {
 
 	private int currentSelectedCampusPosition;
 	private FenixSpace currentCampus;
+	private int currentSelectedBuildingPosition;
+	private FenixSpace currentBuilding;
+
+	public int getCurrentSelectedBuildingPosition() {
+		return currentSelectedBuildingPosition;
+	}
+
+	public void setCurrentSelectedBuildingPosition(
+			int currentSelectedBuildingPosition) {
+		this.currentSelectedBuildingPosition = currentSelectedBuildingPosition;
+	}
+
+	public FenixSpace getCurrentBuilding() {
+		return currentBuilding;
+	}
+
+	public void setCurrentBuilding(FenixSpace currentBuilding) {
+		this.currentBuilding = currentBuilding;
+	}
+
 	private DateTime time;
 
 	public FenixFreeRoomsApplication() {
