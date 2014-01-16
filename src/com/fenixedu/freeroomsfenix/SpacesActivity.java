@@ -6,6 +6,9 @@ import android.os.Bundle;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 public class SpacesActivity extends SherlockFragmentActivity {
 
@@ -14,6 +17,24 @@ public class SpacesActivity extends SherlockFragmentActivity {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_spaces);
 		initActionBarTabs();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+		inflater.inflate(R.menu.spaces, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_search:
+			// Handled in fragment
+			return false;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 	private void initActionBarTabs() {
