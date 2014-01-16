@@ -9,7 +9,7 @@
     <!-- API configurations -->
     <string name="fenixedu_client_id">7065221202521</string>
     <string name="fenixedu_client_secret">zHaiWfLxfW1Wt8rbwusDAx8lt24Z4PvG0tyzSS7607nxRZb23mTNBqVZzab9KGzU45RMH4z2tn8e4PJ7xDB8OSuTzBE0dBs8BN3vKatTb4rX1BNWcTq</string>
-    <string name="fenixedu_client_base_url">https://fenix.ist.utl.pt</string>
+    <string name="fenixedu_client_base_url">https://fenix.tecnico.ulisboa.pt</string>
     <string name="fenixedu_client_callback_url">http://localhost:8000/login</string>
 
     <!-- Buttons -->
@@ -17,6 +17,9 @@
     <string name="button_main_explore">Just explore</string>
     <string name="title_activity_spaces">Search spaces</string>
     <string name="title_activity_list_campus">Campus List</string>
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+    
     
     <!-- Tabs -->
     <string name="tab_spaces_campus">Campus</string>
@@ -25,6 +28,9 @@
     
     <!-- Text Views (Labels) -->
     <string name="fragment_list_floors_rooms_building_label">Rooms on building</string>
-   	<string name="white_spaces">  </string>
-
+   	<string name="textview_list_floors_rooms_next_event_label">Next event </string>
+   	<string name="textview_rooms_search_label">Rooms free until </string>
+   	
+   	<!-- Titles -->
+   	<string name="dialog_rooms_search_title">Search rooms</string>
 </resources>
