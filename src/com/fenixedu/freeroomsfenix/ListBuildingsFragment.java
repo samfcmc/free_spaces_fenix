@@ -64,7 +64,7 @@ public class ListBuildingsFragment extends SherlockFragment {
 
 	private void loadCampus() {
 		String campusId = application.getCurrentCampus().getId();
-		String day = application.getTimeAsString();
+		String day = application.getDateAsString();
 		application.getFenixEduClient().getSpace(
 				campusId,
 				day,
