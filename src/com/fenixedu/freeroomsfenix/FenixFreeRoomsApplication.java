@@ -20,6 +20,9 @@ public class FenixFreeRoomsApplication extends Application {
 	private int currentSelectedBuildingPosition;
 	private FenixSpace currentBuilding;
 
+	private static final String datePattern = "dd/MM/yyyy";
+	private static final String hourPattern = "HH:mm";
+
 	public int getCurrentSelectedBuildingPosition() {
 		return currentSelectedBuildingPosition;
 	}
@@ -92,10 +95,18 @@ public class FenixFreeRoomsApplication extends Application {
 		this.time = time;
 	}
 
-	public String getTimeAsString() {
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+	public String getDateAsString() {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern(datePattern);
 		String dateString = formatter.print(time);
 		return dateString;
+	}
+
+	public String getDateTimePattern() {
+		return datePattern + " " + hourPattern;
+	}
+
+	public String getDatePattern() {
+		return datePattern;
 	}
 
 }
