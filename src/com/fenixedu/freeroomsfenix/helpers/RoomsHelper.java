@@ -5,7 +5,10 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import pt.ist.fenixedu.android.FenixEduHttpResponseHandler;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
+import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Floor;
+import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Room;
 
 import com.fenixedu.freeroomsfenix.FenixFreeRoomsApplication;
 
@@ -13,6 +16,11 @@ import com.fenixedu.freeroomsfenix.FenixFreeRoomsApplication;
  * The Class RoomsHelper.
  */
 public class RoomsHelper {
+
+	private static FenixEduHttpResponseHandler<Room[]> responseHandlerAfterGetAllRooms;
+	private static int roomsToLoad = 0;
+	private static FenixSpace[] roomsArray;
+	private static Room[] rooms;
 
 	/**
 	 * Gets the next event.
@@ -89,7 +97,7 @@ public class RoomsHelper {
 	 *            the hour in format HH:mm
 	 * @return the date time
 	 */
-	private static DateTime getDateTime(FenixSpace.Room.RoomEvent event,
+	public static DateTime getDateTime(FenixSpace.Room.RoomEvent event,
 			FenixFreeRoomsApplication application, String hour) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern(application
 				.getDatePattern() + " e HH:mm");
@@ -98,6 +106,46 @@ public class RoomsHelper {
 		DateTime result = formatter.parseDateTime(timeString);
 
 		return result;
+	}
+
+	public static void loadFloorRooms(Floor floor,
+			final FenixFreeRoomsApplication application,
+			FenixEduHttpResponseHandler<Room[]> responseHandler) {
+		responseHandlerAfterGetAllRooms = responseHandler;
+
+		loadRoomsFromFloor(floor, application);
+
+	}
+
+	private static void loadRoomsFromFloor(Floor floor,
+			FenixFreeRoomsApplication application) {
+		roomsToLoad = floor.getContainedSpaces().size();
+		roomsArray = floor.getContainedSpaces().toArray(
+				new FenixSpace[roomsToLoad]);
+		rooms = new Room[roomsToLoad];
+
+		loadRoomRecursive(application);
+
+	}
+
+	private static void loadRoomRecursive(
+			final FenixFreeRoomsApplication application) {
+		if (roomsToLoad == 0) {
+			responseHandlerAfterGetAllRooms.onSuccess(rooms);
+		} else {
+			roomsToLoad--;
+			String roomId = roomsArray[roomsToLoad].getId();
+			application.getFenixEduClient().getSpace(roomId,
+					application.getDateAsString(),
+					new FenixEduHttpResponseHandler<Room>(Room.class) {
+
+						@Override
+						public void onSuccess(Room room) {
+							rooms[roomsToLoad] = room;
+							loadRoomRecursive(application);
+						}
+					});
+		}
 	}
 
 }

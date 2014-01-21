@@ -23,6 +23,9 @@ public class FenixFreeRoomsApplication extends Application {
 	private static final String datePattern = "dd/MM/yyyy";
 	private static final String hourPattern = "HH:mm";
 
+	private int searchHour;
+	private int searchMinute;
+
 	public int getCurrentSelectedBuildingPosition() {
 		return currentSelectedBuildingPosition;
 	}
@@ -45,6 +48,8 @@ public class FenixFreeRoomsApplication extends Application {
 	public FenixFreeRoomsApplication() {
 		currentSelectedCampusPosition = -1;
 		time = new DateTime();
+		this.searchHour = time.getHourOfDay();
+		this.searchMinute = time.getMinuteOfHour();
 	}
 
 	@Override
@@ -107,6 +112,38 @@ public class FenixFreeRoomsApplication extends Application {
 
 	public String getDatePattern() {
 		return datePattern;
+	}
+
+	public int getSearchHour() {
+		return searchHour;
+	}
+
+	public void setSearchHour(int searchHour) {
+		this.searchHour = searchHour;
+	}
+
+	public int getSearchMinute() {
+		return searchMinute;
+	}
+
+	public void setSearchMinute(int searchMinute) {
+		this.searchMinute = searchMinute;
+	}
+
+	public String getSearchTimeAsString() {
+		String hour, minute;
+		if (this.searchHour < 10) {
+			hour = "0" + this.searchHour;
+		} else {
+			hour = "" + this.searchHour;
+		}
+
+		if (this.searchMinute < 10) {
+			minute = "0" + this.searchMinute;
+		} else {
+			minute = "" + this.searchMinute;
+		}
+		return hour + ":" + minute;
 	}
 
 }

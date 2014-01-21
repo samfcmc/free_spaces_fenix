@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+
 import pt.ist.fenixedu.android.FenixEduHttpResponseHandler;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace;
-import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Building;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Floor;
 import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Room;
+import pt.ist.fenixedu.sdk.beans.publico.FenixSpace.Room.RoomEvent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnGroupClickListener;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockDialogFragment;
@@ -24,19 +28,19 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.fenixedu.freeroomsfenix.helpers.FloorsHelper;
 import com.fenixedu.freeroomsfenix.helpers.RoomsHelper;
 
 public class ListFloorsAndRoomsFragment extends SherlockFragment {
 
 	private FenixFreeRoomsApplication application;
-	private List<FenixSpace> floors;
+	private Floor[] floors;
 
 	private Map<String, List<FenixSpace.Room>> rooms;
+	private Map<String, List<FenixSpace.Room>> filteredRooms;
 
 	private ExpandableListView expandableListView;
 	private FloorsAndRoomsExpandableListAdapter adapter;
-
-	private int roomsToLoad;
 
 	public ListFloorsAndRoomsFragment() {
 	}
@@ -92,12 +96,24 @@ public class ListFloorsAndRoomsFragment extends SherlockFragment {
 				.setText(application.getCurrentBuilding().getName());
 
 		rooms = new HashMap<String, List<FenixSpace.Room>>();
+		filteredRooms = rooms;
 
 		loadFloorsList();
 	}
 
-	private void updateFloorsList(FenixSpace.Building building) {
-		floors = building.getContainedSpaces();
+	private void loadFloorsList() {
+		FloorsHelper.loadFloors(application,
+				new FenixEduHttpResponseHandler<Floor[]>(Floor[].class) {
+
+					@Override
+					public void onSuccess(Floor[] floorsArray) {
+						updateFloorsList(floorsArray);
+					}
+				});
+	}
+
+	private void updateFloorsList(Floor[] floorsArray) {
+		floors = floorsArray;
 		adapter = new FloorsAndRoomsExpandableListAdapter();
 		expandableListView.setAdapter(adapter);
 
@@ -106,7 +122,7 @@ public class ListFloorsAndRoomsFragment extends SherlockFragment {
 			public boolean onGroupClick(ExpandableListView parent, View v,
 					int groupPosition, long id) {
 				if (adapter.getChildrenCount(groupPosition) == 0) {
-					loadFloor(groupPosition);
+					loadFloorRooms(groupPosition);
 					return true;
 				}
 				return false;
@@ -114,92 +130,40 @@ public class ListFloorsAndRoomsFragment extends SherlockFragment {
 		});
 	}
 
-	private void loadFloorsList() {
-		String buildingId = application.getCurrentBuilding().getId();
-		String day = application.getDateAsString();
-		application.getFenixEduClient().getSpace(
-				buildingId,
-				day,
-				new FenixEduHttpResponseHandler<FenixSpace.Building>(
-						FenixSpace.Building.class) {
+	private void loadFloorRooms(final int groupPosition) {
+		final Floor floor = floors[groupPosition];
+		RoomsHelper.loadFloorRooms(floor, application,
+				new FenixEduHttpResponseHandler<Room[]>(Room[].class) {
 
 					@Override
-					public void onSuccess(Building building) {
-						updateFloorsList(building);
-					}
-
-				});
-	}
-
-	private void loadFloor(final int groupPosition) {
-		FenixSpace floor = (FenixSpace) adapter.getGroup(groupPosition);
-		String floorId = floor.getId();
-		String day = application.getDateAsString();
-
-		application.getFenixEduClient().getSpace(
-				floorId,
-				day,
-				new FenixEduHttpResponseHandler<FenixSpace.Floor>(
-						FenixSpace.Floor.class) {
-
-					@Override
-					public void onSuccess(Floor floor) {
-						loadFloorRooms(floor, groupPosition);
+					public void onSuccess(Room[] roomsArray) {
+						updateFloorRooms(floor, roomsArray, groupPosition);
 					}
 				});
 	}
 
-	private void loadFloorRooms(final FenixSpace.Floor floor,
-			final int groupPosition) {
-		// Update floor in list
-		for (FenixSpace floorSpace : floors) {
-			if (floorSpace.getId().equals(floor.getId())) {
-				floors.set(groupPosition, floor);
-			}
+	private void updateFloorRooms(Floor floor, Room[] roomsArray,
+			int groupPosition) {
+		List<Room> roomsList = new ArrayList<FenixSpace.Room>();
+		for (Room room : roomsArray) {
+			roomsList.add(room);
 		}
-		rooms.put(floor.getId(), new ArrayList<FenixSpace.Room>());
-		roomsToLoad = floor.getContainedSpaces().size();
 
-		loadRoom(floor, groupPosition);
-	}
+		rooms.put(floor.getId(), roomsList);
 
-	private void loadRoom(final FenixSpace.Floor floor, final int groupPosition) {
-		if (roomsToLoad == 0) {
-			expandableListView.performItemClick(
-					adapter.getGroupView(groupPosition, false, null, null),
-					groupPosition, adapter.getGroupId(groupPosition));
-		} else {
-			roomsToLoad--;
-			FenixSpace room = floor.getContainedSpaces().get(roomsToLoad);
-			String spaceId = room.getId();
-			String day = application.getDateAsString();
-			application.getFenixEduClient().getSpace(
-					spaceId,
-					day,
-					new FenixEduHttpResponseHandler<FenixSpace.Room>(
-							FenixSpace.Room.class) {
+		adapter.getFilter().filter("");
 
-						@Override
-						public void onSuccess(Room room) {
-							addRoom(floor.getId(), room, groupPosition);
-							loadRoom(floor, groupPosition);
-						}
+		expandableListView.expandGroup(groupPosition);
 
-					});
-		}
-	}
-
-	private void addRoom(String floorId, FenixSpace.Room room,
-			final int groupPosition) {
-		rooms.get(floorId).add(room);
 	}
 
 	private class FloorsAndRoomsExpandableListAdapter extends
-			BaseExpandableListAdapter {
+			BaseExpandableListAdapter implements Filterable {
 
 		public Object getChild(int groupPosition, int childPosition) {
-			String floorId = floors.get(groupPosition).getId();
-			return rooms.get(floorId).get(childPosition);
+			Floor group = (Floor) getGroup(groupPosition);
+			String floorId = group.getId();
+			return filteredRooms.get(floorId).get(childPosition);
 		}
 
 		public long getChildId(int groupPosition, int childPosition) {
@@ -237,23 +201,22 @@ public class ListFloorsAndRoomsFragment extends SherlockFragment {
 		}
 
 		public int getChildrenCount(int groupPosition) {
-			FenixSpace group = (FenixSpace) getGroup(groupPosition);
+			Floor group = (Floor) getGroup(groupPosition);
 			String groupId = group.getId();
-			List<FenixSpace.Room> childrens = rooms.get(groupId);
+			List<FenixSpace.Room> childrens = filteredRooms.get(groupId);
 
-			if (childrens == null
-					|| childrens.size() < group.getContainedSpaces().size()) {
+			if (childrens == null) {
 				return 0;
 			}
 			return childrens.size();
 		}
 
 		public Object getGroup(int groupPosition) {
-			return floors.get(groupPosition);
+			return floors[groupPosition];
 		}
 
 		public int getGroupCount() {
-			return floors.size();
+			return floors.length;
 		}
 
 		public long getGroupId(int groupPosition) {
@@ -283,6 +246,64 @@ public class ListFloorsAndRoomsFragment extends SherlockFragment {
 
 		public boolean isChildSelectable(int groupPosition, int childPosition) {
 			return false;
+		}
+
+		public Filter getFilter() {
+			return new RoomsFilter();
+		}
+
+	}
+
+	private class RoomsFilter extends Filter {
+
+		@Override
+		protected FilterResults performFiltering(CharSequence constraint) {
+			FilterResults results = new FilterResults();
+
+			Map<String, List<FenixSpace.Room>> filteredRooms = new HashMap<String, List<Room>>();
+
+			for (FenixSpace floor : floors) {
+				String floorId = floor.getId();
+				List<FenixSpace.Room> floorRooms = rooms.get(floorId);
+				List<FenixSpace.Room> floorFilteredRooms = new ArrayList<FenixSpace.Room>();
+
+				if (floorRooms == null) {
+					continue;
+				}
+
+				for (FenixSpace.Room r : floorRooms) {
+					RoomEvent event = RoomsHelper.getNextEvent(r, application);
+					// There's no events... So the room is free
+					if (event == null) {
+						floorFilteredRooms.add(r);
+					} else {
+						DateTime eventDateTime = RoomsHelper.getDateTime(event,
+								application, event.getStart());
+						DateTime searchDateTime = RoomsHelper.getDateTime(
+								event, application,
+								application.getSearchTimeAsString());
+						if (eventDateTime.isAfter(searchDateTime)) {
+							floorFilteredRooms.add(r);
+						}
+
+					}
+				}
+				filteredRooms.put(floorId, floorFilteredRooms);
+			}
+
+			results.values = filteredRooms;
+			results.count = filteredRooms.size();
+
+			return results;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		protected void publishResults(CharSequence constraint,
+				FilterResults results) {
+			filteredRooms = (Map<String, List<Room>>) results.values;
+			adapter.notifyDataSetChanged();
+
 		}
 
 	}
